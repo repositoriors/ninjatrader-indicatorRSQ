@@ -15,7 +15,7 @@ Recommended local folder:
 - `INSTALL.md`
 - `.gitignore`
 
-## What to Keep Private
+## What to Keep Separate
 
 - `C:\Users\Home\RSQ-Signal-API`
 - backend logic and API code

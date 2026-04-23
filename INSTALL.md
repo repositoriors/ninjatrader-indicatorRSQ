@@ -21,10 +21,9 @@
 - `Show Full HUD`: show full layout
 - `Show All Timeframes`: show `1s`, `1m`, and `5m`
 
-## API Base URL Examples
+## API Base URL
 
-- Local API: `http://127.0.0.1:8000`
-- Hosted API: `https://api.rsq.digital`
+Set `ApiBaseUrl` to the endpoint provided for your environment.
 
 ## Safe Distribution Notes
 
@@ -34,4 +33,4 @@ If you share this package with other users, do not include:
 - `.env` files
 - backend source code
 - local research CSV files
-- deployment scripts from the private RSQ project
+- deployment scripts from unrelated private projects

@@ -1,17 +1,16 @@
 //======================================================================
-// RSQ Signal Multi-Frame Ã¢â‚¬â€ Institutional Command HUD for NinjaTrader 8
+// RSQ Signal Multi-Frame - NinjaTrader 8 indicator
 //
-// All displayed metrics come from the RSQ Signal API:
-//   bias, market_state, signal_strength, as_of
+// All displayed metrics come from the configured remote API.
 //
 // No local chart data (Volume, Close, DOM) is mixed with RSQ data.
-// No broker-specific delta is shown. Pure RSQ order-flow intelligence.
+// No broker-specific delta is shown.
 //
 // INSTALLATION:
 //   1. Copy to Documents\NinjaTrader 8\bin\Custom\Indicators\
-//   2. Tools Ã¢â€ â€™ Edit NinjaScript Ã¢â€ â€™ Compile
-//   3. Add to chart Ã¢â€ â€™ enter your API key
-//   4. Get key at rsq.digital
+//   2. Tools -> Edit NinjaScript -> Compile
+//   3. Add to chart and enter your API settings
+//   4. Provide your API settings
 //======================================================================
 
 #region Using declarations
@@ -163,7 +162,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         {
             if (State == State.SetDefaults)
             {
-                Description       = "RSQ Signal Ã¢â‚¬â€ Institutional order flow command HUD. Diagnostic, not prediction.";
+                Description       = "RSQ multi-frame signal HUD. Diagnostic display only.";
                 Name              = "RSQSignalMultiFrame";
                 Calculate         = Calculate.OnEachTick;
                 IsOverlay         = true;
@@ -171,7 +170,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 PaintPriceMarkers = false;
                 ApiKey            = "";
                 Symbol            = "BTCUSDT";
-                ApiBaseUrl        = "https://api.rsq.digital";
+                ApiBaseUrl        = "";
                 MinStrength       = 0.65;
                 RefreshSeconds    = 1;
                 ShowFullHud       = true;
@@ -336,7 +335,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             RenderTarget.DrawLine(new Vector2(x + 18, y + h - 48), new Vector2(x + w - 18, y + h - 48), brushGridLine, 1f);
             DrawText("ALIGNMENT: " + mf.AlignmentScore.ToString("0.00"), tfSmall, AlignmentBrush(mf.AlignmentScore), x + 18, y + h - 38, 160, 18);
-            DrawText("rsq.digital ? Diagnostic.", tfTiny, brushMuted, x + w - 190, y + h - 36, 172, 16, DWTextAlignment.Trailing);
+            DrawText("Diagnostic display.", tfTiny, brushMuted, x + w - 190, y + h - 36, 172, 16, DWTextAlignment.Trailing);
         }
 
         private void DrawTfRow(string label, TimeframeData tf, float x, float y, float w)
@@ -1352,7 +1351,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         {
             string apiKey = ApiKey ?? "";
             string sym = (Symbol ?? "BTCUSDT").Trim();
-            string apiBaseUrl = (ApiBaseUrl ?? "https://api.rsq.digital").Trim();
+            string apiBaseUrl = (ApiBaseUrl ?? "").Trim();
 
             try
             {
@@ -1368,7 +1367,15 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
 
                 if (string.IsNullOrWhiteSpace(apiBaseUrl))
-                    apiBaseUrl = "https://api.rsq.digital";
+                {
+                    lock (signalLock)
+                    {
+                        consecutiveFetchFailures++;
+                        lastFetchError = "no base url";
+                        lastHttpStatus = 0;
+                    }
+                    return;
+                }
                 apiBaseUrl = apiBaseUrl.TrimEnd('/');
 
                 string url = apiBaseUrl + "/signal/multi?symbol=" + Uri.EscapeDataString(sym);

@@ -1,4 +1,4 @@
-# RSQ NinjaTrader Indicator
+# NinjaTrader Indicator Package
 
 Public distribution package for the `RSQSignalMultiFrame` NinjaTrader 8 indicator.
 
@@ -16,13 +16,6 @@ This package is intentionally limited to the client-side indicator only.
 - internal logs, CSVs, audits, or research artifacts
 - experimental indicators and diagnostic scripts
 
-## Recommended Publishing Model
-
-Use this repository as the public client package and keep the signal engine private.
-
-- Public: indicator source and installation docs
-- Private: backend logic, thresholds, scoring, training data, audits, and deployment files
-
 ## Basic Usage
 
 1. Copy `RSQSignalMultiFrame.cs` to `Documents\NinjaTrader 8\bin\Custom\Indicators`.
@@ -32,11 +25,8 @@ Use this repository as the public client package and keep the signal engine priv
    - `ApiKey`
    - `ApiBaseUrl`
 
-Common `ApiBaseUrl` values:
-
-- Local: `http://127.0.0.1:8000`
-- Production: `https://api.rsq.digital`
+`ApiBaseUrl` should be provided by the operator for the intended environment.
 
 ## Exposure Boundary
 
-This package exposes the indicator UI/client integration only. It should not be used as a public repository for the full RSQ backend project.
+This package is limited to the client-side indicator only.
