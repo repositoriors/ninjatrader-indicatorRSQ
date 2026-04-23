@@ -1,13 +1,14 @@
 # NinjaTrader Indicator Package
 
-Public distribution package for the `RSQSignalMultiFrame` NinjaTrader 8 indicator.
+Public client package for the `RSQSignalMultiFrame` NinjaTrader 8 indicator.
 
-This package is intentionally limited to the client-side indicator only.
+This repository is intentionally limited to the indicator only.
 
 ## Included
 
 - `RSQSignalMultiFrame.cs`
 - `INSTALL.md`
+- `SECURITY.md`
 
 ## Not Included
 
@@ -25,7 +26,7 @@ This package is intentionally limited to the client-side indicator only.
    - `ApiKey`
    - `ApiBaseUrl`
 
-`ApiBaseUrl` should be provided by the operator for the intended environment.
+Configuration values should be provided by the operator for the intended environment.
 
 ## Exposure Boundary
 
