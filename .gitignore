@@ -1,0 +1,10 @@
+# Keep this public repo clean and client-only
+*.log
+*.csv
+*.tmp
+*.bak
+.env
+.env.*
+*.zip
+bin/
+obj/
