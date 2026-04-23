@@ -287,6 +287,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                 mf = CloneMultiFrame(lastMultiFrame);
 
             UpdateAlignmentAnimation(mf.AlignmentScore);
+            double pressureBuy, pressureSell;
+            ComputePressureFromRsq(s, out pressureBuy, out pressureSell);
+            string pressureBias = PressureBias(pressureBuy, pressureSell);
+            double pressureStrength = Math.Max(pressureBuy, pressureSell);
 
             float x = ChartPanel.X + 18f;
             float y = ChartPanel.Y + 18f;
@@ -321,11 +325,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                 cy = y + 104;
             }
 
-            DrawText(consensus, tfDominant, ConsensusBrush(mf.Consensus), x + 18, cy, 160, 38);
+            DrawText(ConsensusHeadline(consensus), tfDominant, ConsensusBrush(mf.Consensus), x + 18, cy, 160, 38);
             DrawAlignmentBar(x + 178, cy + 10, 186, 13, alignmentDisplay);
             DrawText(AlignmentText(mf), tfTiny, brushMuted, x + 178, cy + 28, 186, 14, DWTextAlignment.Trailing);
+            DrawText("PRESSURE NOW", tfTiny, brushMuted, x + 18, cy + 42, 90, 14);
+            DrawText(pressureBias + " " + PressurePercentText(pressureStrength), tfSmall, PressureBrush(pressureBias), x + 108, cy + 40, 120, 16);
 
-            float rowsY = triple ? y + 194 : y + 156;
+            float rowsY = triple ? y + 208 : y + 170;
             if (ShowAllTimeframes)
             {
                 DrawTfRow("1s", mf.Tf1s, x + 18, rowsY, w - 36);
@@ -334,7 +340,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
 
             RenderTarget.DrawLine(new Vector2(x + 18, y + h - 48), new Vector2(x + w - 18, y + h - 48), brushGridLine, 1f);
-            DrawText("ALIGNMENT: " + mf.AlignmentScore.ToString("0.00"), tfSmall, AlignmentBrush(mf.AlignmentScore), x + 18, y + h - 38, 160, 18);
+            DrawText(AlignmentStatusText(mf.AlignmentScore), tfSmall, AlignmentBrush(mf.AlignmentScore), x + 18, y + h - 38, 160, 18);
             DrawText("Diagnostic display.", tfTiny, brushMuted, x + w - 190, y + h - 36, 172, 16, DWTextAlignment.Trailing);
         }
 
@@ -387,6 +393,37 @@ namespace NinjaTrader.NinjaScript.Indicators
             else if (mf.AlignmentScore >= 0.60) aligned = 2;
             else if (mf.AlignmentScore > 0.0) aligned = 1;
             return aligned + "/3 aligned";
+        }
+
+        private string AlignmentStatusText(double score)
+        {
+            if (score <= 0.001) return "ALIGNMENT: LOW";
+            if (score < 0.34) return "ALIGNMENT: FRAGILE";
+            return "ALIGNMENT: " + score.ToString("0.00");
+        }
+
+        private string ConsensusHeadline(string consensus)
+        {
+            return consensus == "NEUTRAL" ? "MIXED" : consensus;
+        }
+
+        private string PressureBias(double buy, double sell)
+        {
+            double gap = Math.Abs(buy - sell);
+            if (gap < 0.08) return "BALANCED";
+            return buy >= sell ? "BUY" : "SELL";
+        }
+
+        private string PressurePercentText(double strength)
+        {
+            return ((int)Math.Round(Clamp01(strength) * 100)).ToString() + "%";
+        }
+
+        private D2DBrush PressureBrush(string bias)
+        {
+            if (bias == "BUY") return brushBuy;
+            if (bias == "SELL") return brushSell;
+            return brushNeutral;
         }
 
         private D2DBrush AlignmentBrush(double score)
